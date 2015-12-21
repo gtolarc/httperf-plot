@@ -13,10 +13,7 @@ httperf-plot is a python wrapper around httperf
 
 ubuntu:
 ```
-sudo apt-get install httperf python3 python3-dev python3-pip
-```
-```
-sudo pip3 install matplotlib
+sudo apt-get install httperf python3 python3-dev python3-pip python3-matplotlib
 ```
 
 

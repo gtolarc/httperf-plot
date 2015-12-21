@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+
+""" plot
+
+.. moduleauthor:: limseok <gtolarc@gmail.com>
+"""
+
+import matplotlib
+
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
