@@ -6,9 +6,10 @@
 """
 
 import argparse
-import matplotlib
 import re
 import subprocess
+
+from plot import Canvas
 
 
 def parse_args():
@@ -61,6 +62,8 @@ def httperf_once(args):
     out_bytes_str = out_bytes.decode()
     print(out_bytes_str)
 
+    rst['Number of requests'] = int(re.findall(r'(Total: connections \d+ requests )(\d+)', out_bytes_str)[0][1])
+    rst['Rate'] = int(args['--rate'])
     rst['Request rate'] = float(re.findall(r'(Request rate: )(\d+\.\d+)', out_bytes_str)[0][1])
     rst['Response time'] = float(re.findall(r'(Reply time \[ms\]: response )(\d+\.\d+)', out_bytes_str)[0][1])
     rst['Response status 1xx'] = int(re.findall(r'(1xx=)(\d+)', out_bytes_str)[0][1])
@@ -70,6 +73,28 @@ def httperf_once(args):
     rst['Response status 5xx'] = int(re.findall(r'(5xx=)(\d+)', out_bytes_str)[0][1])
 
     return rst
+
+
+def httperf_plot(data):
+    parse_data = [(datum['Rate'], datum['Request rate']) for datum in data]
+    a = Canvas(title='Rate - Request rate', xlab='Rate', ylab='Request rate',
+               xrange=(0, max([datum['Rate'] for datum in data])),
+               yrange=(0, max([datum['Request rate'] for datum in data])))
+    a.plot(parse_data).save('plot1.png')
+
+    parse_data = [(datum['Rate'], datum['Response time']) for datum in data]
+    b = Canvas(title='Rate - Response time', xlab='Rate', ylab='Response time',
+               xrange=(0, max([datum['Rate'] for datum in data])),
+               yrange=(0, max([datum['Response time'] for datum in data])))
+    b.plot(parse_data).save('plot2.png')
+
+    parse_data = [(datum['Rate'],
+                   (datum['Response status 2xx'] + datum['Response status 3xx']) / datum['Number of requests'] * 100.0)
+                  for datum in data]
+    c = Canvas(title='Rate - Success rate', xlab='Rate', ylab='Success rate',
+               xrange=(0, max([datum['Rate'] for datum in data])),
+               yrange=(0, 105))
+    c.plot(parse_data).save('plot3.png')
 
 
 if __name__ == '__main__':
@@ -84,6 +109,6 @@ if __name__ == '__main__':
             plot_data.append(httperf_once(args))
             args['--rate'] = str(int(args['--rate']) + int(ramp_up[0]))
 
-        print(plot_data)
+        httperf_plot(plot_data)
     else:
         httperf_once(args)
