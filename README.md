@@ -1,27 +1,38 @@
 httperf-plot
 ============
 
+httperf-plot is a python wrapper around httperf
+
 
 ## requirements
 
+* httperf
 * python3
 * pip
 * matplotlib
 
 ubuntu:
 ```
-sudo apt-get install python3 python3-dev python3-pip
+sudo apt-get install httperf python3 python3-dev python3-pip
 ```
 ```
 sudo pip3 install matplotlib
 ```
 
 
+## matplotlib in OSX
+
+```
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+```
+
+
 ## usage
 
 ```
-usage: httperf-plot.py [-h] [--server S] [--port N] [--uri S] [--rate X]
-                       [--num-conns N] [--num-calls N] [--method S]
+usage: httperf-plot.py [-h] [--server S] [--port N] [--uri S] [--timeout X]
+                       [--rate X] [--num-conns N] [--num-calls N] [--method S]
                        [--add-header S] [--wsesslog N,X,F] [--ramp-up X,N]
 
 httperf-plot is a python wrapper around httperf
@@ -32,6 +43,8 @@ optional arguments:
   --port N          specifies the port number N on which the web server is
                     listening for HTTP requests
   --uri S           specifies that URI S should be accessed on the server
+  --timeout X       specifies the amount of time X that httperf is willing to
+                    wait for a server reaction
   --rate X          specifies the fixed rate X at which connections or
                     sessions are created
   --num-conns N     specifies the total number of connections N to create

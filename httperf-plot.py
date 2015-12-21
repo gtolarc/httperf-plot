@@ -6,6 +6,8 @@
 """
 
 import argparse
+import matplotlib
+import re
 import subprocess
 
 
@@ -21,6 +23,9 @@ def parse_args():
     parser.add_argument('--uri', metavar='S',
                         dest='--uri', action='store',
                         help='specifies that URI S should be accessed on the server')
+    parser.add_argument('--timeout', metavar='X',
+                        dest='--timeout', action='store',
+                        help='specifies the amount of time X that httperf is willing to wait for a server reaction')
     parser.add_argument('--rate', metavar='X',
                         dest='--rate', action='store',
                         help='specifies the fixed rate X at which connections or sessions are created')
@@ -50,19 +55,35 @@ def parse_args():
 
 
 def httperf_once(args):
+    rst = {}
+
     out_bytes = subprocess.check_output(['httperf'] + ['='.join(arg) for arg in args.items() if arg[1] is not None])
-    print(out_bytes.decode())
+    out_bytes_str = out_bytes.decode()
+    print(out_bytes_str)
+
+    rst['Request rate'] = float(re.findall(r'(Request rate: )(\d+\.\d+)', out_bytes_str)[0][1])
+    rst['Response time'] = float(re.findall(r'(Reply time \[ms\]: response )(\d+\.\d+)', out_bytes_str)[0][1])
+    rst['Response status 1xx'] = int(re.findall(r'(1xx=)(\d+)', out_bytes_str)[0][1])
+    rst['Response status 2xx'] = int(re.findall(r'(2xx=)(\d+)', out_bytes_str)[0][1])
+    rst['Response status 3xx'] = int(re.findall(r'(3xx=)(\d+)', out_bytes_str)[0][1])
+    rst['Response status 4xx'] = int(re.findall(r'(4xx=)(\d+)', out_bytes_str)[0][1])
+    rst['Response status 5xx'] = int(re.findall(r'(5xx=)(\d+)', out_bytes_str)[0][1])
+
+    return rst
 
 
 if __name__ == '__main__':
     args = parse_args()
+    plot_data = []
 
     if args['--ramp-up'] is not None:
         ramp_up = args['--ramp-up'].split(',')
         del args['--ramp-up']
 
         for i in range(int(ramp_up[1])):
-            httperf_once(args)
+            plot_data.append(httperf_once(args))
             args['--rate'] = str(int(args['--rate']) + int(ramp_up[0]))
+
+        print(plot_data)
     else:
         httperf_once(args)
