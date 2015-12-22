@@ -5,9 +5,9 @@
 .. moduleauthor:: limseok <gtolarc@gmail.com>
 """
 
-import matplotlib
-
-matplotlib.use('Agg')
+# import matplotlib
+#
+# matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -27,11 +27,12 @@ class Canvas(object):
             self.ax.set_ylim(yrange)
         self.legend = []
 
+    @staticmethod
+    def show():
+        plt.show()
+
     def save(self, filename='plot.png'):
         FigureCanvasAgg(self.fig).print_png(open(filename, 'wb'))
-
-    def show(self):
-        plt.show()
 
     def plot(self, data, color='green', style='-', width=2, legend=None, xrange=None):
         if callable(data) and xrange:

@@ -79,13 +79,13 @@ def httperf_plot(data):
     parse_data = [(datum['Rate'], datum['Request rate']) for datum in data]
     a = Canvas(title='Rate - Request rate', xlab='Rate', ylab='Request rate',
                xrange=(0, max([datum['Rate'] for datum in data])),
-               yrange=(0, max([datum['Request rate'] for datum in data])))
+               yrange=(-5, max([datum['Request rate'] for datum in data]) + 5))
     a.plot(parse_data).save('plot1.png')
 
     parse_data = [(datum['Rate'], datum['Response time']) for datum in data]
     b = Canvas(title='Rate - Response time', xlab='Rate', ylab='Response time',
                xrange=(0, max([datum['Rate'] for datum in data])),
-               yrange=(0, max([datum['Response time'] for datum in data])))
+               yrange=(-5, max([datum['Response time'] for datum in data]) + 5))
     b.plot(parse_data).save('plot2.png')
 
     parse_data = [(datum['Rate'],
@@ -93,8 +93,10 @@ def httperf_plot(data):
                   for datum in data]
     c = Canvas(title='Rate - Success rate', xlab='Rate', ylab='Success rate',
                xrange=(0, max([datum['Rate'] for datum in data])),
-               yrange=(0, 105))
+               yrange=(-5, 100 + 5))
     c.plot(parse_data).save('plot3.png')
+
+    Canvas.show()
 
 
 if __name__ == '__main__':
